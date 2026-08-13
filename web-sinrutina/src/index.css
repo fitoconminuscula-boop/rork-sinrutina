@@ -1,0 +1,329 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/**
+ * SinRutina's visual language lives in these custom properties. They are written
+ * at runtime by AppearanceProvider from the resolved palette, so a theme change
+ * is one repaint and every component reads a single source of truth.
+ *
+ * The values below are only the first paint, before the profile is applied.
+ */
+@layer base {
+  :root {
+    --sr-background: rgb(250 250 248);
+    --sr-surface: rgb(255 255 255);
+    --sr-elevated: rgb(255 255 255);
+    --sr-primary: rgb(75 95 227);
+    --sr-primary-soft: rgb(232 234 251);
+    --sr-on-primary: rgb(255 255 255);
+    --sr-ink: rgb(20 23 43);
+    --sr-secondary-ink: rgb(102 109 133);
+    --sr-sky: rgb(111 168 240);
+    --sr-lavender: rgb(167 139 250);
+    --sr-blush: rgb(248 127 166);
+    --sr-mint: rgb(63 207 165);
+    --sr-divider: rgb(236 236 232);
+    --sr-shadow: rgb(0 0 0 / 0.035);
+
+    --sr-primary-a12: rgb(75 95 227 / 0.12);
+    --sr-primary-a24: rgb(75 95 227 / 0.24);
+    --sr-mint-a14: rgb(63 207 165 / 0.14);
+    --sr-blush-a14: rgb(248 127 166 / 0.14);
+
+    --sr-page-padding: 22px;
+    --sr-card-padding: 24px;
+    --sr-section-gap: 30px;
+    --sr-row-gap: 13px;
+    --sr-row-padding: 18px;
+    --sr-card-radius: 26px;
+    --sr-row-radius: 18px;
+    --sr-control-radius: 20px;
+    --sr-control-height: 54px;
+    --sr-text-scale: 1;
+
+    --sr-card-fill: rgb(255 255 255);
+    --sr-card-border: rgb(236 236 232 / 0.62);
+    --sr-card-border-width: 0.7px;
+    --sr-card-shadow: 0 4px 12px rgb(0 0 0 / 0.035);
+
+    --sr-duration-quick: 180ms;
+    --sr-duration-standard: 320ms;
+    --sr-press-scale: 0.985;
+
+    /* How much of the screen the on-screen keyboard is covering right now,
+       published by trackKeyboard(). Zero until something says otherwise. */
+    --sr-keyboard: 0px;
+    /* The curve iOS uses to settle a sheet: fast out, no bounce, no overshoot. */
+    --sr-ease-settle: cubic-bezier(0.32, 0.72, 0, 1);
+
+    /* shadcn tokens, kept so any borrowed primitive still renders sanely. */
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  /**
+   * The app is a fixed frame with scrolling inside it, not a document that
+   * scrolls. That one decision is most of what separates this from a website on
+   * a phone: the address bar never grows and shrinks under the content, the tab
+   * bar never drifts, and pulling past the end of a list does not drag the whole
+   * page away from the top of the screen.
+   */
+  html,
+  body,
+  #root {
+    height: 100%;
+    overflow: hidden;
+    overscroll-behavior: none;
+  }
+
+  body {
+    background-color: var(--sr-background);
+    color: var(--sr-ink);
+    font-family:
+      -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, "Helvetica Neue", Arial,
+      sans-serif;
+    font-size: calc(16px * var(--sr-text-scale));
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    /* Rotating the phone must not resize the type behind the person's back. */
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    /* No grey flash on tap, and no 350ms wait for a double tap that is never
+       coming: this app has nothing to zoom into by tapping twice. */
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+
+  /**
+   * Controls behave like controls: a long press on a button opens nothing and
+   * selects nothing. Prose stays selectable on purpose — being able to copy the
+   * title of a task is worth more than the last 2% of native mimicry.
+   */
+  button,
+  [role="button"],
+  [role="radio"],
+  [role="switch"],
+  nav,
+  kbd,
+  label {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  /* iOS zooms the whole page in when a field under 16px takes focus. */
+  input,
+  textarea,
+  select {
+    font-size: max(16px, calc(16px * var(--sr-text-scale)));
+  }
+
+  /* Reduce Motion always wins, at the platform level too. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+    }
+  }
+}
+
+@layer components {
+  /* The frame. Nothing outside it moves, ever. */
+  .sr-app {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background-color: var(--sr-background);
+  }
+
+  /* The only thing that scrolls. `contain` stops a list from handing its
+     leftover momentum to whatever is behind it. */
+  .sr-scroll {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior-y: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* A scrollbar is a desktop affordance. On a touch screen it is just a line
+     that appears where a native app would show nothing. */
+  @media (pointer: coarse) {
+    .sr-scroll {
+      scrollbar-width: none;
+    }
+
+    .sr-scroll::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  .sr-card {
+    background-color: var(--sr-card-fill);
+    border: var(--sr-card-border-width) solid var(--sr-card-border);
+    border-radius: var(--sr-card-radius);
+    box-shadow: var(--sr-card-shadow);
+  }
+
+  /* Flat, solid and uniform. The shape option changes radius and height only —
+     never gradients, gloss, depth or heavy shadows. */
+  .sr-primary-button {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: var(--sr-control-height);
+    padding: 0 20px;
+    border-radius: var(--sr-control-radius);
+    background-color: var(--sr-primary);
+    color: var(--sr-on-primary);
+    font-size: calc(17px * var(--sr-text-scale));
+    font-weight: 600;
+    transition: transform var(--sr-duration-quick) ease, opacity var(--sr-duration-quick) ease;
+  }
+
+  .sr-primary-button:active:not(:disabled) {
+    transform: scale(var(--sr-press-scale));
+  }
+
+  .sr-primary-button:disabled {
+    opacity: 0.38;
+  }
+
+  .sr-quiet-button {
+    color: var(--sr-primary);
+    font-size: calc(15px * var(--sr-text-scale));
+    font-weight: 500;
+    transition: opacity var(--sr-duration-quick) ease, transform var(--sr-duration-quick) ease;
+  }
+
+  .sr-quiet-button:active {
+    opacity: 0.62;
+  }
+
+  /* Immediate feedback on every tap: the press is visible before anything else
+     happens. */
+  .sr-pressable {
+    transition: transform var(--sr-duration-quick) ease, opacity var(--sr-duration-quick) ease,
+      background-color var(--sr-duration-quick) ease;
+  }
+
+  .sr-pressable:active {
+    transform: scale(var(--sr-press-scale));
+    opacity: 0.85;
+  }
+
+  :where(button, [role="button"], [role="switch"], [role="radio"], a):focus-visible {
+    outline: 2px solid var(--sr-primary);
+    outline-offset: 2px;
+    border-radius: 8px;
+  }
+
+  /* The bar every sheet is dragged by. Present because the sheet really does
+     follow the finger — it is a handle, not a decoration. */
+  .sr-grabber {
+    width: 36px;
+    height: 5px;
+    border-radius: 999px;
+    background-color: var(--sr-divider);
+  }
+}
+
+@layer utilities {
+  .sr-fade-in {
+    animation: sr-fade-in var(--sr-duration-standard) ease-out;
+  }
+
+  .sr-sheet-in {
+    animation: sr-sheet-in var(--sr-duration-standard) cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  @keyframes sr-fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes sr-sheet-in {
+    from {
+      transform: translateY(100%);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+
+  /* Changing tab is a change of place, not a redraw. A short rise says so
+     without making anyone wait for it. */
+  .sr-screen-in {
+    animation: sr-screen-in var(--sr-duration-standard) var(--sr-ease-settle);
+  }
+
+  @keyframes sr-screen-in {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}

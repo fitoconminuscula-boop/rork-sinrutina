@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+	Deliberately empty: this project is configured for personal installation with
+	a free Apple ID, which Apple does not allow to use App Groups or Family
+	Controls. The file is kept so the two capabilities can be restored together
+	when the app moves to a paid account:
+
+	  com.apple.security.application-groups
+	    -> group.app.rork.txdqdl3g4c4eqlv6x06ff
+	     Re-enables the widget, the share sheet and Siri seeing the same tasks.
+
+	  com.apple.developer.family-controls
+	     Re-enables blocking apps during a focus session. Requires a separate
+	     request to Apple, approved by hand.
+
+	Restoring them also means adding CODE_SIGN_ENTITLEMENTS back to the SinRutina
+	target and re-adding the four extensions to "Embed Foundation Extensions".
+-->
+<plist version="1.0">
+<dict>
+</dict>
+</plist>

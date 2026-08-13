@@ -1,0 +1,23 @@
+{
+  "$schema": "https://rork.com/schema/rork.json",
+  "apps": [
+    {
+      "name": "SinRutina",
+      "path": "ios-sinrutina",
+      "framework": "swift",
+      "settings": {
+        "displayName": "SinRutina"
+      }
+    },
+    {
+      "name": "SinRutina Web",
+      "path": "web-sinrutina",
+      "framework": "web"
+    },
+    {
+      "name": "Functions",
+      "path": "functions",
+      "framework": "cloudflare"
+    }
+  ]
+}

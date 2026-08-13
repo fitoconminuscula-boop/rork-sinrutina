@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <!-- viewport-fit=cover lets the app reach the edges; the safe-area insets in
+         index.css keep the content out of the notch and the home indicator.
+         user-scalable is left alone: pinch-zoom is an accessibility tool, and a
+         native feel is not worth taking it away from anyone. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>SinRutina</title>
+    <meta
+      name="description"
+      content="Una cosa a la vez. SinRutina te muestra qué hacer ahora y acorta la distancia entre saberlo y empezar."
+    />
+
+    <!-- First paint only. Once the app knows the chosen theme, AppearanceProvider
+         rewrites the active tag, which is what tints the status bar area on iOS
+         and the task switcher on Android. -->
+    <meta name="theme-color" content="#FBFAF7" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#14161C" media="(prefers-color-scheme: dark)" />
+    <meta name="color-scheme" content="light dark" />
+
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="SinRutina" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <!-- Safari turns anything that looks like a date or a phone number into a
+         link, which is wrong inside task titles. -->
+    <meta name="format-detection" content="telephone=no,date=no,address=no,email=no" />
+
+    <meta property="og:title" content="SinRutina" />
+    <meta
+      property="og:description"
+      content="Una cosa a la vez. SinRutina te muestra qué hacer ahora y acorta la distancia entre saberlo y empezar."
+    />
+    <meta property="og:type" content="website" />
+
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <style>
+      /* Painted before the bundle arrives, so a cold start from the home screen
+         opens on the app's own colour instead of a white flash. */
+      html {
+        background-color: #fbfaf7;
+      }
+      @media (prefers-color-scheme: dark) {
+        html {
+          background-color: #14161c;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

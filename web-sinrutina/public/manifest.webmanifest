@@ -1,0 +1,64 @@
+{
+  "id": "/",
+  "name": "SinRutina",
+  "short_name": "SinRutina",
+  "description": "Una cosa a la vez. SinRutina te muestra qué hacer ahora y acorta la distancia entre saberlo y empezar.",
+  "lang": "es",
+  "dir": "ltr",
+  "start_url": "/?desde=inicio",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "portrait",
+  "background_color": "#FBFAF7",
+  "theme_color": "#FBFAF7",
+  "categories": ["productivity", "lifestyle", "utilities"],
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  },
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Capturar algo",
+      "short_name": "Capturar",
+      "description": "Escribir algo pendiente sin abrir nada más.",
+      "url": "/?capturar=",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
+      "name": "Estoy saturado",
+      "short_name": "Saturado",
+      "description": "Dejar en pantalla solo el paso más pequeño.",
+      "url": "/?pantalla=saturado",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" }]
+    }
+  ],
+  "share_target": {
+    "action": "/",
+    "method": "GET",
+    "params": {
+      "title": "titulo",
+      "text": "capturar",
+      "url": "enlace"
+    }
+  }
+}

@@ -1,0 +1,53 @@
+name: SinRutina IPA
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: macos-26
+
+    steps:
+      - name: Descargar código
+        uses: actions/checkout@v4
+
+      - name: Compilar SinRutina para iPhone
+        run: |
+          set -e
+          xcodebuild build \
+            -project "ios-sinrutina/SinRutina.xcodeproj" \
+            -scheme "SinRutina" \
+            -configuration Release \
+            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
+            -derivedDataPath "$GITHUB_WORKSPACE/build/DerivedData" \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            DEVELOPMENT_TEAM=""
+
+      - name: Crear IPA
+        run: |
+          set -e
+          APP_PATH="$GITHUB_WORKSPACE/build/DerivedData/Build/Products/Release-iphoneos/SinRutina.app"
+          test -d "$APP_PATH"
+
+          mkdir -p "$GITHUB_WORKSPACE/build/package/Payload"
+          cp -R "$APP_PATH" "$GITHUB_WORKSPACE/build/package/Payload/SinRutina.app"
+
+          cd "$GITHUB_WORKSPACE/build/package"
+          /usr/bin/zip -qry "$GITHUB_WORKSPACE/SinRutina-unsigned.ipa" Payload
+
+      - name: Publicar IPA
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="sideload-${GITHUB_RUN_NUMBER}"
+          gh release create "$TAG" \
+            "$GITHUB_WORKSPACE/SinRutina-unsigned.ipa#SinRutina-unsigned.ipa" \
+            --title "SinRutina iPhone build ${GITHUB_RUN_NUMBER}" \
+            --notes "IPA para instalar mediante Signulous." \
+            --latest

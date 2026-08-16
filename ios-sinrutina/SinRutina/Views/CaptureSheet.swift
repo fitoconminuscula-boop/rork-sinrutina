@@ -21,7 +21,7 @@ struct CaptureSheet: View {
             VStack(alignment: .leading, spacing: 18) {
                 HStack(alignment: .center, spacing: 12) {
                     SRLogo(size: 34)
-                    Text("Escribe o dicta cualquier cosa…")
+                    Text("Saca lo importante de tu mente")
                         .font(.title2.weight(.semibold))
                         .foregroundStyle(SRDesign.ink)
                         .fixedSize(horizontal: false, vertical: true)

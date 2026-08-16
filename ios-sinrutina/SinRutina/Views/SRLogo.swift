@@ -31,8 +31,8 @@ struct SRLogo: View {
             if showsText {
                 Text("SinRutina")
                     .font(.headline.weight(.semibold))
-                    .foregroundStyle(SRDesign.primary)
-                    .kerning(0.2)
+                    .foregroundStyle(SRDesign.ink)
+                    .kerning(-0.1)
             }
         }
         .accessibilityElement(children: .ignore)

@@ -29,10 +29,20 @@ struct CapturePill: View {
                         Text("Capturar")
                             .font(.subheadline.weight(.semibold))
                     }
-                    .foregroundStyle(SRDesign.primary)
+                    .foregroundStyle(.white)
                     .padding(.horizontal, metrics.isTall ? 24 : 20)
                     .frame(height: controlSize)
-                    .srGlassCapsule()
+                    .background {
+                        Capsule(style: .continuous)
+                            .fill(
+                                LinearGradient(
+                                    colors: [SRDesign.primary, SRDesign.periwinkle],
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                )
+                            )
+                    }
+                    .shadow(color: SRDesign.primary.opacity(0.18), radius: 12, y: 6)
                 }
                 .buttonStyle(SRPressStyle())
                 .accessibilityLabel("Captura rápida")

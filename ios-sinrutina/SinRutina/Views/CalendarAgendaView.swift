@@ -15,10 +15,10 @@ struct CalendarAgendaView: View {
         ScrollView(showsIndicators: false) {
             VStack(alignment: .leading, spacing: 18) {
                 VStack(alignment: .leading, spacing: 7) {
-                    Text("Eventos")
+                    Text("Calendario")
                         .font(.largeTitle.weight(.bold))
                         .foregroundStyle(SRDesign.ink)
-                    Text("Lo que viene en los calendarios que activaste.")
+                    Text("Tu día, claro y fácil de escanear.")
                         .font(.body)
                         .foregroundStyle(SRDesign.secondaryInk)
                 }

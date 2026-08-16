@@ -265,8 +265,20 @@ struct SRPrimaryButtonStyle: ButtonStyle {
             .foregroundStyle(SRDesign.onPrimary)
             .frame(maxWidth: .infinity)
             .frame(minHeight: shape.controlHeight)
-            .background(isEnabled ? SRDesign.primary : SRDesign.primary.opacity(0.38))
+            .background {
+                LinearGradient(
+                    colors: [SRDesign.primary, SRDesign.periwinkle],
+                    startPoint: .leading,
+                    endPoint: .trailing
+                )
+                .opacity(isEnabled ? 1 : 0.38)
+            }
             .clipShape(.rect(cornerRadius: shape.cornerRadius))
+            .shadow(
+                color: isEnabled ? SRDesign.primary.opacity(0.16) : .clear,
+                radius: 10,
+                y: 5
+            )
             .scaleEffect(configuration.isPressed ? SRDesign.pressScale : 1)
             .animation(SRDesign.quickAnimation, value: configuration.isPressed)
     }

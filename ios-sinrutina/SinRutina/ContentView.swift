@@ -27,20 +27,20 @@ struct ContentView: View {
             .tag(AppTab.now)
 
             NavigationStack {
-                TaskListView(state: .after)
+                CalendarAgendaView()
             }
             .tabItem {
-                Label("Después", systemImage: "calendar")
+                Label("Calendario", systemImage: "calendar")
             }
-            .tag(AppTab.after)
+            .tag(AppTab.calendar)
 
             NavigationStack {
-                TaskListView(state: .someday)
+                TasksHubView()
             }
             .tabItem {
-                Label("Algún día", systemImage: "leaf")
+                Label("Tareas", systemImage: "checklist")
             }
-            .tag(AppTab.someday)
+            .tag(AppTab.tasks)
 
             NavigationStack {
                 SettingsView()

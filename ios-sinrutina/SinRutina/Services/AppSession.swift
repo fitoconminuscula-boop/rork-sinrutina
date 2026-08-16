@@ -41,7 +41,7 @@ final class AppSession {
 
 enum AppTab: Hashable {
     case now
-    case after
-    case someday
+    case calendar
+    case tasks
     case settings
 }

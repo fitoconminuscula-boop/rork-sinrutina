@@ -49,18 +49,18 @@ nonisolated struct SRThemeTokens: Sendable {
     // MARK: Light families
 
     static let pastel = SRThemeTokens(
-        background: SRRGB(hex: "#FAFAF8")!,
+        background: SRRGB(hex: "#F7F9FC")!,
         surface: SRRGB(hex: "#FFFFFF")!,
         elevatedSurface: SRRGB(hex: "#FFFFFF")!,
-        primary: SRRGB(hex: "#4B5FE3")!,
-        ink: SRRGB(hex: "#14172B")!,
-        secondaryInk: SRRGB(hex: "#666D85")!,
-        sky: SRRGB(hex: "#6FA8F0")!,
-        periwinkle: SRRGB(hex: "#8B9BF5")!,
-        lavender: SRRGB(hex: "#A78BFA")!,
-        blush: SRRGB(hex: "#F87FA6")!,
-        mint: SRRGB(hex: "#3FCFA5")!,
-        divider: SRRGB(hex: "#ECECE8")!,
+        primary: SRRGB(hex: "#1769FF")!,
+        ink: SRRGB(hex: "#111827")!,
+        secondaryInk: SRRGB(hex: "#667085")!,
+        sky: SRRGB(hex: "#22B8CF")!,
+        periwinkle: SRRGB(hex: "#5B6CFF")!,
+        lavender: SRRGB(hex: "#875BF7")!,
+        blush: SRRGB(hex: "#F06B7A")!,
+        mint: SRRGB(hex: "#19B88A")!,
+        divider: SRRGB(hex: "#E7ECF3")!,
         isDark: false
     )
 

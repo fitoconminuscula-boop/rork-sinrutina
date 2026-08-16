@@ -1,0 +1,318 @@
+name: Aplicar diseño juvenil SinRutina
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  redesign:
+    runs-on: macos-26
+
+    steps:
+      - name: Descargar SinRutina
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Aplicar diseño, calendario y navegación
+        shell: bash
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
+
+          ROOT = Path("ios-sinrutina")
+
+          def replace(path, old, new, count=1):
+              p = ROOT / path
+              text = p.read_text(encoding="utf-8")
+              if old not in text:
+                  raise SystemExit(f"No encontré el bloque esperado en {p}")
+              p.write_text(text.replace(old, new, count), encoding="utf-8")
+
+          # 1) Barra inferior: Ahora · Calendario · Tareas · Ajustes
+          replace(
+              "SinRutina/Services/AppSession.swift",
+              """enum AppTab: Hashable {
+              case now
+              case after
+              case someday
+              case settings
+          }""",
+              """enum AppTab: Hashable {
+              case now
+              case calendar
+              case tasks
+              case settings
+          }"""
+          )
+
+          replace(
+              "SinRutina/ContentView.swift",
+              """            NavigationStack {
+                          TaskListView(state: .after)
+                      }
+                      .tabItem {
+                          Label("Después", systemImage: "calendar")
+                      }
+                      .tag(AppTab.after)
+
+                      NavigationStack {
+                          TaskListView(state: .someday)
+                      }
+                      .tabItem {
+                          Label("Algún día", systemImage: "leaf")
+                      }
+                      .tag(AppTab.someday)
+          """,
+              """            NavigationStack {
+                          CalendarAgendaView()
+                      }
+                      .tabItem {
+                          Label("Calendario", systemImage: "calendar")
+                      }
+                      .tag(AppTab.calendar)
+
+                      NavigationStack {
+                          TasksHubView()
+                      }
+                      .tabItem {
+                          Label("Tareas", systemImage: "checklist")
+                      }
+                      .tag(AppTab.tasks)
+          """
+          )
+
+          # 2) Conserva Después + Algún día dentro de Tareas
+          tasks_hub = ROOT / "SinRutina/Views/TasksHubView.swift"
+          tasks_hub.write_text(
+          """import SwiftUI
+
+          /// Reúne las dos bandejas de baja presión sin perderlas al dar al calendario
+          /// un lugar permanente en la barra inferior.
+          struct TasksHubView: View {
+              @State private var selection: TaskState = .after
+
+              var body: some View {
+                  VStack(spacing: 0) {
+                      Picker("Lista", selection: $selection) {
+                          Text("Después").tag(TaskState.after)
+                          Text("Algún día").tag(TaskState.someday)
+                      }
+                      .pickerStyle(.segmented)
+                      .padding(.horizontal, SRDesign.pagePadding)
+                      .padding(.top, 14)
+                      .padding(.bottom, 2)
+
+                      TaskListView(state: selection)
+                          .id(selection)
+                          .transition(.opacity)
+                  }
+                  .background(SRDesign.background.ignoresSafeArea())
+                  .animation(SRDesign.quickAnimation, value: selection)
+              }
+          }
+          """, encoding="utf-8")
+
+          # 3) Paleta base: juvenil, masculina-ligera, más color sin neón
+          theme = ROOT / "SinRutinaShared/SRThemeTokens.swift"
+          text = theme.read_text(encoding="utf-8")
+          swaps = {
+              '#FAFAF8': '#F7F9FC',
+              '#4B5FE3': '#1769FF',
+              '#14172B': '#111827',
+              '#666D85': '#667085',
+              '#6FA8F0': '#22B8CF',
+              '#8B9BF5': '#5B6CFF',
+              '#A78BFA': '#875BF7',
+              '#F87FA6': '#F06B7A',
+              '#3FCFA5': '#19B88A',
+              '#ECECE8': '#E7ECF3',
+          }
+          for old, new in swaps.items():
+              if old not in text:
+                  raise SystemExit(f"Color esperado {old} no encontrado en SRThemeTokens.swift")
+              text = text.replace(old, new, 1)
+          theme.write_text(text, encoding="utf-8")
+
+          # 4) Botón principal azul -> índigo, más vivo pero sobrio
+          replace(
+              "SinRutina/DesignSystem.swift",
+              """.background(isEnabled ? SRDesign.primary : SRDesign.primary.opacity(0.38))
+                      .clipShape(.rect(cornerRadius: shape.cornerRadius))""",
+              """.background {
+                          LinearGradient(
+                              colors: [SRDesign.primary, SRDesign.periwinkle],
+                              startPoint: .leading,
+                              endPoint: .trailing
+                          )
+                          .opacity(isEnabled ? 1 : 0.38)
+                      }
+                      .clipShape(.rect(cornerRadius: shape.cornerRadius))
+                      .shadow(
+                          color: isEnabled ? SRDesign.primary.opacity(0.16) : .clear,
+                          radius: 10,
+                          y: 5
+                      )"""
+          )
+
+          # 5) Marca más limpia: wordmark oscuro, icono nuevo generado abajo
+          replace(
+              "SinRutina/Views/SRLogo.swift",
+              """.foregroundStyle(SRDesign.primary)
+                              .kerning(0.2)""",
+              """.foregroundStyle(SRDesign.ink)
+                              .kerning(-0.1)"""
+          )
+
+          # 6) Calendario visible como calendario, no como pantalla técnica
+          replace(
+              "SinRutina/Views/CalendarAgendaView.swift",
+              'Text("Eventos")',
+              'Text("Calendario")'
+          )
+          replace(
+              "SinRutina/Views/CalendarAgendaView.swift",
+              'Text("Lo que viene en los calendarios que activaste.")',
+              'Text("Tu día, claro y fácil de escanear.")'
+          )
+
+          # 7) Captura: copy más directo y botón flotante con color real
+          replace(
+              "SinRutina/Views/CaptureSheet.swift",
+              'Text("Escribe o dicta cualquier cosa…")',
+              'Text("Saca lo importante de tu mente")'
+          )
+
+          replace(
+              "SinRutina/Views/CapturePill.swift",
+              """.foregroundStyle(SRDesign.primary)
+                              .padding(.horizontal, metrics.isTall ? 24 : 20)
+                              .frame(height: controlSize)
+                              .srGlassCapsule()""",
+              """.foregroundStyle(.white)
+                              .padding(.horizontal, metrics.isTall ? 24 : 20)
+                              .frame(height: controlSize)
+                              .background {
+                                  Capsule(style: .continuous)
+                                      .fill(
+                                          LinearGradient(
+                                              colors: [SRDesign.primary, SRDesign.periwinkle],
+                                              startPoint: .leading,
+                                              endPoint: .trailing
+                                          )
+                                      )
+                              }
+                              .shadow(color: SRDesign.primary.opacity(0.18), radius: 12, y: 6)"""
+          )
+
+          print("Rediseño aplicado al workspace del runner.")
+          PY
+
+      - name: Crear nuevo logo e icono
+        shell: bash
+        run: |
+          cat > /tmp/make_icon.swift <<'SWIFT'
+          import AppKit
+
+          let size = NSSize(width: 1024, height: 1024)
+          let image = NSImage(size: size)
+          image.lockFocus()
+
+          let rect = NSRect(origin: .zero, size: size)
+          let gradient = NSGradient(colors: [
+              NSColor(red: 0.09, green: 0.39, blue: 0.96, alpha: 1),
+              NSColor(red: 0.20, green: 0.35, blue: 0.95, alpha: 1),
+              NSColor(red: 0.48, green: 0.29, blue: 0.92, alpha: 1)
+          ])!
+          gradient.draw(in: rect, angle: -35)
+
+          func drawCheck(offsetY: CGFloat) {
+              let path = NSBezierPath()
+              path.move(to: NSPoint(x: 285, y: 590 - offsetY))
+              path.line(to: NSPoint(x: 430, y: 445 - offsetY))
+              path.line(to: NSPoint(x: 720, y: 735 - offsetY))
+              path.lineWidth = 82
+              path.lineCapStyle = .round
+              path.lineJoinStyle = .round
+              NSColor.white.setStroke()
+              path.stroke()
+          }
+
+          drawCheck(offsetY: 0)
+          drawCheck(offsetY: 155)
+
+          NSColor.white.withAlphaComponent(0.24).setFill()
+          NSBezierPath(roundedRect: NSRect(x: 742, y: 225, width: 130, height: 34), xRadius: 17, yRadius: 17).fill()
+          NSBezierPath(roundedRect: NSRect(x: 790, y: 165, width: 108, height: 34), xRadius: 17, yRadius: 17).fill()
+
+          image.unlockFocus()
+
+          guard
+              let tiff = image.tiffRepresentation,
+              let bitmap = NSBitmapImageRep(data: tiff),
+              let png = bitmap.representation(using: .png, properties: [:])
+          else {
+              fatalError("No se pudo crear el icono")
+          }
+
+          for path in CommandLine.arguments.dropFirst() {
+              try png.write(to: URL(fileURLWithPath: path))
+          }
+          SWIFT
+
+          swift /tmp/make_icon.swift \
+            "ios-sinrutina/SinRutina/Assets.xcassets/AppIcon.appiconset/icon.png" \
+            "ios-sinrutina/SinRutina/Assets.xcassets/Logo.imageset/logo.png"
+
+      - name: Revisar cambios
+        run: |
+          git diff --check
+          git status --short
+
+      - name: Compilar SinRutina para iPhone
+        run: |
+          set -e
+          xcodebuild build \
+            -project "ios-sinrutina/SinRutina.xcodeproj" \
+            -scheme "SinRutina" \
+            -configuration Release \
+            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
+            -derivedDataPath "$GITHUB_WORKSPACE/build/DerivedData" \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            DEVELOPMENT_TEAM=""
+
+      - name: Crear IPA
+        run: |
+          set -e
+          APP="$GITHUB_WORKSPACE/build/DerivedData/Build/Products/Release-iphoneos/SinRutina.app"
+          test -d "$APP"
+          rm -rf "$GITHUB_WORKSPACE/build/package"
+          mkdir -p "$GITHUB_WORKSPACE/build/package/Payload"
+          cp -R "$APP" "$GITHUB_WORKSPACE/build/package/Payload/SinRutina.app"
+          cd "$GITHUB_WORKSPACE/build/package"
+          /usr/bin/zip -qry "$GITHUB_WORKSPACE/SinRutina-juvenil.ipa" Payload
+
+      - name: Guardar el rediseño en GitHub
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add ios-sinrutina
+          git commit -m "Apply youthful colorful SinRutina design"
+          git push origin HEAD:main
+
+      - name: Publicar IPA nueva
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="design-${GITHUB_RUN_NUMBER}"
+          gh release create "$TAG" \
+            "$GITHUB_WORKSPACE/SinRutina-juvenil.ipa#SinRutina-juvenil.ipa" \
+            --target "$(git rev-parse HEAD)" \
+            --title "SinRutina diseño juvenil ${GITHUB_RUN_NUMBER}" \
+            --notes "Nuevo diseño juvenil y colorido, nuevo logo, Calendario en navegación y Tareas agrupadas." \
+            --latest
